@@ -51,3 +51,79 @@ $ virtualenv -p python3 .venv
 $ source .venv/bin/activate
 $ python setup.py install
 ```
+
+### The data
+
+Our folder containing the data looks like this:
+
+```
+$ tree /data
+├── Sample1_S1_L001_R1_001.fastq.gz
+├── Sample1_S1_L001_R2_001.fastq.gz
+├── Sample2_S2_L001_R1_001.fastq.gz
+├── Sample2_S2_L001_R2_001.fastq.gz
+├── Sample3_S3_L001_R1_001.fastq.gz
+└── Sample3_S3_L001_R2_001.fastq.gz
+```
+Create a file named __Snakefile__
+
+```py
+configfile:
+    "config.json"
+
+SAMPLES, = glob_wildcards(config['data']+"/{id}_L001_R1_001.fastq.gz")
+
+rule move:
+    input:
+        bam = expand("{sample}.final.bam", sample=SAMPLES),
+        bai = expand("{sample}.final.bai", sample=SAMPLES)
+    params:
+        output = config['data']+"/Alignment"
+    shell:
+        """
+        mkdir -p {params.output}
+        mv {input} {params.output}
+        """
+
+rule align_sort:
+    input:
+        config['data']+"/{sample}_L001_R1_001.fastq.gz",
+        config['data']+"/{sample}_L001_R2_001.fastq.gz"
+    output:
+        temp("{sample}.mapped.bam")
+    params:
+        rg = "@RG\\tID:{sample}\\tPL:ILLUMINA\\tSM:{sample}",
+        ref = config['genome']
+    shell:
+        "bwa mem -R '{params.rg}' -M {params.ref} {input} | samtools sort -o {output} -"
+
+rule removeClipping:
+    input:
+        "{sample}.mapped.bam"
+    output:
+        temp("{sample}.clipped.bam")
+    conda:
+        "bio2.yml"
+    shell:
+        "bamutils removeclipping {input} {output}"
+
+rule mark_duplicates:
+    input:
+        "{sample}.clipped.bam"
+    output:
+        bam = "{sample}.final.bam",
+        bai = "{sample}.final.bai",
+        metrics = temp("{sample}_dedup_metricx.txt")
+    shell:
+        "picard MarkDuplicates I={input} O={output.bam} M={output.metrics} CREATE_INDEX=true"
+
+```
+
+Create a file named __config.json__
+
+```py
+{
+    "data": "./data",
+    "genome": "./WholeGenomeFASTA/hg19.fa",
+}
+```
