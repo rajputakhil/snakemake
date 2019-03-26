@@ -2,7 +2,7 @@
 
 Snakemake is a workflow management system that aims to reduce the complexity of creating workflows by providing a fast and comfortable execution environment, together with a clean and modern specification language in python style. Snakemake workflows are essentially Python scripts extended by declarative code to define rules. Rules describe how to create output files from input files.
 
-## Step 1: Install Miniconda 3
+## Install Miniconda 3
 
 ```sh
 $ wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
@@ -17,7 +17,7 @@ answer with __yes__. Along with a minimal Python 3 environment, Miniconda contai
 
 After opening a new terminal, you can use the new conda command to install software packages and create isolated environments to, e.g., use different versions of the same package. We will later use Conda to create an isolated environment with all required software for this tutorial.
 
-## Step 2: Using conda
+## Using conda
 
 A. Which conda env are installed
 
@@ -38,11 +38,11 @@ $ conda install -c bioconda snakemake
 ```
 from the Bioconda channel.
 
-Or
+## Using virtualenv
 
 Installing from Source
 
-We recommend installing Snakemake into a virtualenv instead of globally. Use the following commands to create a virtualenv and install Snakemake. Note that this will install the development version and as you are installing from the source code, we trust that you know what you are doing and how to checkout individual versions/tags.
+Install Snakemake into a virtualenv instead of globally.
 
 ```
 $ git clone https://bitbucket.org/snakemake/snakemake.git
@@ -52,9 +52,13 @@ $ source .venv/bin/activate
 $ python setup.py install
 ```
 
-### The data
+### The Data
 
-Our folder containing the data looks like this:
+1. Download few FASTQ files from the follwoing URL:
+
+ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase3/data/HG00096/sequence_read/
+
+The folder containing the data looks like this:
 
 ```
 $ tree /data
@@ -65,7 +69,23 @@ $ tree /data
 ├── Sample3_S3_L001_R1_001.fastq.gz
 └── Sample3_S3_L001_R2_001.fastq.gz
 ```
-Create a file named __Snakefile__
+Place these files in the folder:
+
+```sh
+./data
+```
+
+2. Download and index reference file as explained in the following:
+
+https://github.com/rajputakhil/dna_analysis_workflow
+
+Place the reference and index files in the folder:
+
+```sh
+./WholeGenomeFASTA
+```
+
+3. Create a file named __Snakefile__
 
 ```py
 configfile:
@@ -119,7 +139,7 @@ rule mark_duplicates:
 
 ```
 
-Create a file named __config.json__
+4. Create a file named __config.json__
 
 ```py
 {
