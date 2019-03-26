@@ -127,3 +127,35 @@ Create a file named __config.json__
     "genome": "./WholeGenomeFASTA/hg19.fa",
 }
 ```
+
+## Run the workflow
+
+Make sure you are in the conda or in the virtual environment.
+
+```
+$ conda activate bio
+```
+
+or
+
+```
+$ source .venv/bin/activate
+```
+
+Open the __config.json__ and edit, so it fits your needs:
+
+```
+$ nano config.json
+```
+
+First try a dry-run and print out the commands that will be used:
+
+```
+$ snakemake -np
+```
+
+If everything looks fine, start the workflow:
+
+```
+$ snakemake
+```
