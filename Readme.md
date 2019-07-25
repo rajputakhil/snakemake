@@ -117,7 +117,7 @@ rule align_sort:
     shell:
         "bwa mem -R '{params.rg}' -M {params.ref} {input} | samtools sort -o {output} -"
 
-# -R __STR__	Complete read group header line. ’\t’ can be used in STR and will be converted to a TAB in the output SAM. The read group ID will be attached to every read in the output. An example is ’@RG\tID:foo\tSM:bar’. [null]
+# -R _STR_	Complete read group header line. ’\t’ can be used in STR and will be converted to a TAB in the output SAM. The read group ID will be attached to every read in the output. An example is ’@RG\tID:foo\tSM:bar’. [null]
 # -M	Mark shorter split hits as secondary (for Picard compatibility).
 
 rule removeClipping:
